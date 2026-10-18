@@ -1076,7 +1076,7 @@ pub fn side_pane(app: &mut crate::FilmcraftApp, ui: &mut egui::Ui, rect: egui::R
         ui.horizontal(|ui| {
             ui.label(egui::RichText::new("Claude").font(crate::theme::Tokens::semibold(15.0)).color(t.text));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if ui.button("✕").on_hover_text("Close").clicked() {
+                if ui.button("×").on_hover_text("Close").clicked() {
                     app.assistant_open = false;
                 }
             });

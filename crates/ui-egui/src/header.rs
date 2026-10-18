@@ -131,9 +131,22 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
         ui.painter().rect_filled(r, 12.0, if resp.hovered() { t.accent_hover } else { t.accent });
         icons::paint(ui.painter(), Rect::from_center_size(pos2(r.min.x + 14.0, r.center().y), vec2(14.0, 14.0)), Icon::Chat, Color32::WHITE);
         ui.painter().galley(pos2(r.min.x + 25.0, r.center().y - g.size().y / 2.0), g, Color32::WHITE);
+        // Claude: the assistant pane (Window > Claude), next to Discord.
+        let cg = p.layout_no_wrap("Claude".to_string(), Tokens::ui(12.0), t.text);
+        let cw = cg.size().x + 20.0;
+        let cr = Rect::from_min_size(pos2(r.min.x - cw - 8.0, rect.center().y - 12.0), vec2(cw, 24.0));
+        let cresp = ui.interact(cr, egui::Id::new("hdr-claude"), Sense::click()).on_hover_text("Claude or ChatGPT on the open project (Window > Claude)");
+        app.auto.add("header.claude", cr, "Claude");
+        let on = app.assistant_open;
+        ui.painter().rect_filled(cr, 12.0, if on { t.accent } else if cresp.hovered() { t.hover } else { t.field_bg });
+        let ink = if on { Color32::WHITE } else { t.text };
+        ui.painter().galley_with_override_text_color(pos2(cr.min.x + 10.0, cr.center().y - cg.size().y / 2.0), cg, ink);
+        if cresp.clicked() {
+            app.assistant_open = !app.assistant_open;
+        }
         // Localized menus and user titles can be wider than English. Use the actual gap.
         let left = left_end + 12.0;
-        let right = r.min.x - 12.0;
+        let right = cr.min.x - 12.0;
         if right > left + 40.0 {
             let mut job = egui::text::LayoutJob::simple_singleline(title, Tokens::ui(14.0), t.tab_text_active);
             job.wrap.max_width = right - left;
