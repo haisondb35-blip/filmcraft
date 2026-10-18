@@ -25,6 +25,9 @@ pub struct BridgeClient {
     /// never holds up the others or leaves its late reply for the next one to read (#1538).
     idle: Mutex<Vec<Conn>>,
     next_id: AtomicU64,
+    /// The channel's token, sent with every request (`FILMCRAFT_CONTROL_TOKEN`; the Claude pane's
+    /// channel refuses requests without it, the `--control` channel takes none).
+    token: Option<String>,
 }
 
 impl BridgeClient {
@@ -35,7 +38,8 @@ impl BridgeClient {
         if !matches!(host, "127.0.0.1" | "localhost" | "[::1]" | "::1") {
             return Err(AutomationError::BadRequest(format!("bridge address must be loopback, got `{addr}`")));
         }
-        Ok(Self { addr, idle: Mutex::new(Vec::new()), next_id: AtomicU64::new(1) })
+        let token = std::env::var("FILMCRAFT_CONTROL_TOKEN").ok().filter(|t| !t.is_empty());
+        Ok(Self { addr, idle: Mutex::new(Vec::new()), next_id: AtomicU64::new(1), token })
     }
 
     /// Run engine command `id` in the app. A blocking export (`file.exportMedia` with
@@ -85,7 +89,11 @@ impl BridgeClient {
                 None => self.connect().await?,
             };
             let id = self.next_id.fetch_add(1, Ordering::Relaxed);
-            let line = format!("{}\n", json!({"id": id, "method": method, "params": params}));
+            let mut msg = json!({"id": id, "method": method, "params": params});
+            if let (Some(t), Some(o)) = (&self.token, msg.as_object_mut()) {
+                o.insert("token".into(), Value::String(t.clone()));
+            }
+            let line = format!("{msg}\n");
             let res: Result<Value, AutomationError> = async {
                 conn.1.write_all(line.as_bytes()).await.map_err(|e| AutomationError::Bridge(e.to_string()))?;
                 let mut buf = String::new();

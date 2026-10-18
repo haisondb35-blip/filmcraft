@@ -29,6 +29,7 @@ macro_rules! tlf {
     };
 }
 
+pub mod assistant;
 pub mod automation;
 pub mod brand;
 pub mod calc;
@@ -290,6 +291,10 @@ pub struct FilmcraftApp {
     /// Named textures (monitors, thumbnails) with the key they show.
     textures: HashMap<String, (FrameKey, TextureHandle)>,
     control_rx: Option<Receiver<ControlRequest>>,
+    /// Window > Claude: the assistant pane is shown.
+    pub assistant_open: bool,
+    /// The assistant pane: the conversation, the assistant it runs and its control channel.
+    pub assistant: assistant::Assistant,
     /// One explicit panel reveal; consumed by the custom renderer, never repeated per frame.
     pub(crate) pending_panel_raise: Option<PanelKind>,
     /// Explicit automation mode: native widget input and native menu commands are excluded.
@@ -554,6 +559,8 @@ impl FilmcraftApp {
             auto: Default::default(),
             textures: HashMap::new(),
             control_rx: None,
+            assistant_open: false,
+            assistant: assistant::Assistant::default(),
             pending_panel_raise: None,
             control_input_only: false,
             native_window_focused: None,
@@ -1579,10 +1586,16 @@ impl FilmcraftApp {
     }
 
     fn drain_control(&mut self, ctx: &egui::Context) {
-        let Some(rx) = self.control_rx.take() else { return };
+        let rx = self.control_rx.take();
         let now = ctx.input(|i| i.time);
         let mut reqs: Vec<(ControlRequest, f64)> = std::mem::take(&mut self.deferred);
-        while let Ok(req) = rx.try_recv() {
+        // The assistant pane's own channel: requests from the assistant it started.
+        if let Some(arx) = &self.assistant.control_rx {
+            while let Ok(req) = arx.try_recv() {
+                reqs.push((req, now + 3.0));
+            }
+        }
+        while let Some(Ok(req)) = rx.as_ref().map(|r| r.try_recv()) {
             // UI requests need rendered frames: raise the window if `ui` hasn't run recently
             // (occluded macOS windows stop running `ui`).
             if req.method.starts_with("ui.") && now - self.last_ui_time > 0.25 {
@@ -1614,7 +1627,7 @@ impl FilmcraftApp {
                 }
             }
         }
-        self.control_rx = Some(rx);
+        self.control_rx = rx;
     }
 
     /// Capture once the UI shows the current state (`settled`): after a seek the monitor shows the
@@ -1783,7 +1796,14 @@ impl FilmcraftApp {
             header::show(self, ui, header);
         }
         let status_h = if self.ui.show_status_bar { 20.0 } else { 0.0 };
-        let body = egui::Rect::from_min_max(egui::pos2(full.min.x + 1.0, header.max.y + 1.0), egui::pos2(full.max.x - 1.0, full.max.y - status_h - 2.0));
+        let mut body = egui::Rect::from_min_max(egui::pos2(full.min.x + 1.0, header.max.y + 1.0), egui::pos2(full.max.x - 1.0, full.max.y - status_h - 2.0));
+        // Window > Claude: the assistant pane takes the right of the workspace.
+        if self.assistant_open {
+            let width = 340.0_f32.min(body.width() * 0.4);
+            let pane = egui::Rect::from_min_max(egui::pos2(body.max.x - width, body.min.y), body.max);
+            body.max.x = pane.min.x - 1.0;
+            assistant::side_pane(self, ui, pane);
+        }
         match self.ui.mode {
             state::Mode::Edit => self.dock_area(ui, body),
             state::Mode::Import => panels::import_mode::show(self, ui, body),

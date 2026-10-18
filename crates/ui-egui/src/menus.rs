@@ -107,6 +107,8 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("view.theme.medium", "Dark", ["View", "Appearance"], None),
     uic!("view.theme.light", "Light", ["View", "Appearance"], None),
     uic!("view.appearanceMode.next", "Next Appearance Mode", ["View", "Appearance"], None),
+    // The assistant pane: Claude, or ChatGPT through Codex, working on the open project.
+    uic!("window.claude", "Claude", ["Window"], None),
     uic!("window.workspace.editing", "Editing", ["Window", "Workspaces"], Some("Alt+Shift+1")),
     uic!("window.workspace.assembly", "Assembly", ["Window", "Workspaces"], Some("Alt+Shift+2")),
     uic!("window.workspace.color", "Color", ["Window", "Workspaces"], Some("Alt+Shift+3")),
@@ -178,6 +180,10 @@ pub fn targets_source(app: &FilmcraftApp, params: &Value) -> bool {
 
 /// Execute a UI or engine command by id.
 pub fn invoke(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, mut params: Value) -> Result<Value, String> {
+    if id == "window.claude" {
+        app.assistant_open = !app.assistant_open;
+        return Ok(Value::Null);
+    }
     if id == "edit.selectAll" && (crate::panels::graphics::select_all_edited_text(app) || crate::panels::effect_controls::select_all_keyframes(app)) {
         return Ok(Value::Null);
     }
@@ -685,6 +691,7 @@ pub fn menu_items(app: &FilmcraftApp) -> Vec<MenuItem> {
     for it in &mut v {
         it.label = app.ui.language.tr(&it.label).to_string();
         match it.id.as_str() {
+            "window.claude" => it.checked = Some(app.assistant_open),
             "app.language.english" => it.checked = Some(app.ui.language == crate::i18n::Language::En),
             "app.language.japanese" => it.checked = Some(app.ui.language == crate::i18n::Language::Ja),
             "app.language.spanish" => it.checked = Some(app.ui.language == crate::i18n::Language::Es),
