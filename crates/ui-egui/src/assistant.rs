@@ -1074,7 +1074,7 @@ pub fn side_pane(app: &mut crate::FilmcraftApp, ui: &mut egui::Ui, rect: egui::R
     ui.painter().rect_filled(rect, 0.0, t.panel_bg);
     ui.scope_builder(egui::UiBuilder::new().max_rect(rect.shrink(12.0)), |ui| {
         ui.horizontal(|ui| {
-            ui.label(egui::RichText::new("Claude").font(crate::theme::Tokens::semibold(15.0)).color(t.text));
+            ui.label(egui::RichText::new("AI Assistant").font(crate::theme::Tokens::semibold(15.0)).color(t.text));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if ui.button("×").on_hover_text("Close").clicked() {
                     app.assistant_open = false;

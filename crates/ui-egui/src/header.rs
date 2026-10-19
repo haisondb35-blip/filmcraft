@@ -132,11 +132,11 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
         icons::paint(ui.painter(), Rect::from_center_size(pos2(r.min.x + 14.0, r.center().y), vec2(14.0, 14.0)), Icon::Chat, Color32::WHITE);
         ui.painter().galley(pos2(r.min.x + 25.0, r.center().y - g.size().y / 2.0), g, Color32::WHITE);
         // Claude: the assistant pane (Window > Claude), next to Discord.
-        let cg = p.layout_no_wrap("Claude".to_string(), Tokens::ui(12.0), t.text);
+        let cg = p.layout_no_wrap("AI Assistant".to_string(), Tokens::ui(12.0), t.text);
         let cw = cg.size().x + 20.0;
         let cr = Rect::from_min_size(pos2(r.min.x - cw - 8.0, rect.center().y - 12.0), vec2(cw, 24.0));
         let cresp = ui.interact(cr, egui::Id::new("hdr-claude"), Sense::click()).on_hover_text("Claude or ChatGPT on the open project (Window > Claude)");
-        app.auto.add("header.claude", cr, "Claude");
+        app.auto.add("header.claude", cr, "AI Assistant");
         let on = app.assistant_open;
         ui.painter().rect_filled(cr, 12.0, if on { t.accent } else if cresp.hovered() { t.hover } else { t.field_bg });
         let ink = if on { Color32::WHITE } else { t.text };
