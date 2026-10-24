@@ -1017,6 +1017,14 @@ version = "0.1.0"
 source = "git+https://github.com/storytold/craft-libs?rev=82a24b006eefa036b43c09a67fb9a3fbd17ffe63#82a24b006eefa036b43c09a67fb9a3fbd17ffe63"
 
 [[package]]
+name = "craft-media"
+version = "0.1.0"
+source = "git+https://github.com/storytold/craft-libs?rev=f0ad6c1e1d297908915f4be315b0fcfc9be7b5d4#f0ad6c1e1d297908915f4be315b0fcfc9be7b5d4"
+dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "craft-ui"
 version = "0.1.0"
 source = "git+https://github.com/storytold/craft-libs?rev=5c874d51eeb3de70e735c8ce87a59a7dedd47675#5c874d51eeb3de70e735c8ce87a59a7dedd47675"
@@ -1758,6 +1766,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -1784,7 +1793,7 @@ dependencies = [
 name = "filmcraft-bitstream"
 version = "0.12.0"
 dependencies = [
- "proptest",
+ "craft-media",
 ]
 
 [[package]]
@@ -1908,6 +1917,7 @@ dependencies = [
 name = "filmcraft-engine"
 version = "0.12.0"
 dependencies = [
+ "chrono",
  "craft-docpath",
  "filmcraft-audio-dsp",
  "filmcraft-captions",
@@ -1983,6 +1993,7 @@ dependencies = [
 name = "filmcraft-format"
 version = "0.12.0"
 dependencies = [
+ "chrono",
  "filmcraft-media",
  "filmcraft-project",
  "filmcraft-time",
@@ -2098,17 +2109,17 @@ dependencies = [
 name = "filmcraft-isobmff"
 version = "0.12.0"
 dependencies = [
- "filmcraft-bitstream",
+ "craft-media",
  "filmcraft-testkit",
  "proptest",
  "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
 name = "filmcraft-matroska"
 version = "0.12.0"
 dependencies = [
+ "craft-media",
  "filmcraft-testkit",
  "serde_json",
 ]
@@ -2159,6 +2170,7 @@ dependencies = [
 name = "filmcraft-mxf"
 version = "0.12.0"
 dependencies = [
+ "chrono",
  "filmcraft-testkit",
 ]
 
@@ -2277,6 +2289,7 @@ dependencies = [
 name = "filmcraft-testkit"
 version = "0.12.0"
 dependencies = [
+ "chrono",
  "png",
 ]
 
@@ -2287,6 +2300,7 @@ dependencies = [
  "filmcraft-color",
  "harfrust",
  "skrifa",
+ "tempfile",
  "unicode-bidi",
  "unicode-linebreak",
  "unicode-segmentation",
@@ -2356,6 +2370,7 @@ dependencies = [
  "rustix 1.1.5",
  "serde",
  "serde_json",
+ "tempfile",
  "toml 1.1.6+spec-1.1.0",
  "unicode-bidi",
  "web-time",
