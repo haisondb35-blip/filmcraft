@@ -1063,14 +1063,14 @@ fn read_events(
 /// The theme's colours for the pane and its Markdown, as the app last drew them (FilmCraft keeps
 /// them on the app, not in egui; `side_pane` stores them for the frame).
 fn tokens(ctx: &egui::Context) -> crate::theme::Tokens {
-    ctx.data(|d| d.get_temp::<crate::theme::Tokens>(egui::Id::new("assistant_tokens")))
+    ctx.data(|d| d.get_temp::<crate::theme::Tokens>(egui::Id::unique("assistant_tokens")))
         .unwrap_or_else(|| crate::theme::Tokens::for_kind(crate::theme::ThemeKind::default()))
 }
 
 /// Window > Claude: the pane in `rect`, at the right of the workspace.
 pub fn side_pane(app: &mut crate::FilmcraftApp, ui: &mut egui::Ui, rect: egui::Rect) {
     let t = app.tokens;
-    ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new("assistant_tokens"), t));
+    ui.ctx().data_mut(|d| d.insert_temp(egui::Id::unique("assistant_tokens"), t));
     ui.painter().rect_filled(rect, 0.0, t.panel_bg);
     ui.scope_builder(egui::UiBuilder::new().max_rect(rect.shrink(12.0)), |ui| {
         ui.horizontal(|ui| {
@@ -1093,7 +1093,7 @@ pub fn pane(app: &mut crate::FilmcraftApp, ui: &mut egui::Ui) {
     a.poll_login();
     if a.login == Login::Unchecked {
         // The choice is remembered with the window's other settings.
-        let saved = ui.ctx().data_mut(|d| d.get_persisted::<String>(egui::Id::new("assistant_provider")));
+        let saved = ui.ctx().data_mut(|d| d.get_persisted::<String>(egui::Id::unique("assistant_provider")));
         if let Some(p) = saved.as_deref().and_then(Provider::from_key) {
             a.provider = p;
         }
@@ -1104,14 +1104,14 @@ pub fn pane(app: &mut crate::FilmcraftApp, ui: &mut egui::Ui) {
     }
     ui.horizontal(|ui| {
         let mut chosen = a.provider;
-        egui::ComboBox::from_id_salt("assistant_provider").selected_text(chosen.label()).show_ui(ui, |ui| {
+        craft_ui::ComboBox::from_id_salt("assistant_provider").selected_text(chosen.label()).show_ui(ui, |ui| {
             for p in Provider::ALL {
                 ui.selectable_value(&mut chosen, p, p.label());
             }
         });
         if chosen != a.provider {
             a.set_provider(chosen);
-            ui.ctx().data_mut(|d| d.insert_persisted(egui::Id::new("assistant_provider"), chosen.key().to_string()));
+            ui.ctx().data_mut(|d| d.insert_persisted(egui::Id::unique("assistant_provider"), chosen.key().to_string()));
         }
         let (text, sign_in) = match &a.login {
             Login::Unchecked | Login::Checking => ("Checking sign-in…".to_string(), false),
