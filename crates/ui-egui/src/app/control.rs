@@ -18,6 +18,8 @@ impl FilmcraftApp {
         let rx = self.control_rx.take();
         let now = self.now();
         let mut reqs: Vec<(ControlRequest, f64)> = std::mem::take(&mut self.deferred);
+        // Open from the start and listed for the other Craft apps (once).
+        self.assistant.share(ctx);
         // The assistant pane's own channel: requests from the assistant it started.
         if let Some(arx) = &self.assistant.control_rx {
             while let Ok(req) = arx.try_recv() {
