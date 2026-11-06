@@ -22,7 +22,17 @@ fn assistant_button(app: &mut FilmcraftApp, ui: &mut egui::Ui, t: &Tokens, right
     let cresp = ui.interact(cr, egui::Id::unique("hdr-claude"), Sense::click()).on_hover_text("Claude or ChatGPT on the open project (Window > Claude)");
     app.auto.add("header.claude", cr, "AI Assistant");
     let on = app.assistant_open;
-    ui.painter().rect_filled(cr, 12.0, if on { t.accent } else if cresp.hovered() { t.hover } else { t.field_bg });
+    ui.painter().rect_filled(
+        cr,
+        12.0,
+        if on {
+            t.accent
+        } else if cresp.hovered() {
+            t.hover
+        } else {
+            t.field_bg
+        },
+    );
     let ink = if on { Color32::WHITE } else { t.text };
     ui.painter().galley_with_override_text_color(pos2(cr.min.x + 10.0, cr.center().y - cg.size().y / 2.0), cg, ink);
     if cresp.clicked() {
