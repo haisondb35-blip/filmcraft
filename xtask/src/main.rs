@@ -31,6 +31,8 @@ use serde_json::Value;
 
 /// (crate name without the `filmcraft-` prefix, layer).
 const LAYERS: &[(&str, u8)] = &[
+    // The synced cloud folder shared by every Craft app (AI memory, earlier versions): a leaf.
+    ("craft-sync", 0),
     ("testkit", 0),
     ("time", 0),
     ("geom", 0),

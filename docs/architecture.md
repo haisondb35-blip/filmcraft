@@ -37,6 +37,7 @@ and `filmcraft-cli`.
 
 | Crate | Layer | Purpose |
 |---|---|---|
+| `craft-sync` | L0 | the synced cloud folder every Craft app shares (iCloud Drive, OneDrive, Google Drive, Dropbox): mirrors the AI conversations, keeps earlier versions of saved files, finds the copies a cloud keeps; same crate in every Craft app |
 | `time` | L0 | `Tick`, `FrameRate`, `TimeRange`, timecode parse/format (NDF/DF, frames, feet+frames, samples) |
 | `geom` | L0 | `Vec2`, `Rect`, `Affine`, Motion-transform composition |
 | `color` | L0 | colour spaces, transfer functions, YUV↔RGB matrices, LUTs |
