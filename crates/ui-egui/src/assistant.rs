@@ -1654,8 +1654,15 @@ mod tests {
             args: vec!["mcp".into(), "--app".into(), "4242".into()],
             env: vec![("FILMCRAFT_CONTROL_TOKEN".into(), "t\"k".into())],
         };
-        let l =
-            Launch { prompt: "x".into(), session: None, mcp_config: PathBuf::from("m.json"), work_dir: PathBuf::from("."), provider: Provider::Codex, server };
+        let l = Launch {
+            prompt: "x".into(),
+            session: None,
+            mcp_config: PathBuf::from("m.json"),
+            work_dir: PathBuf::from("."),
+            provider: Provider::Codex,
+            server,
+            api: None,
+        };
         let a = codex_args(&l);
         assert_eq!(&a[..5], ["exec", "--json", "--skip-git-repo-check", "--sandbox", "read-only"]);
         assert!(a.contains(&"approval_policy=\"never\"".to_string()));
