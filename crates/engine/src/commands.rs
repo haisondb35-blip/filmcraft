@@ -5321,6 +5321,8 @@ fn write_project(s: &mut Session, path: &str, adopt: bool) -> Result<Value> {
     // what is open (sequence tabs, how each is shown) goes into the file beside the project
     let view = s.project_view();
     let bytes = filmcraft_format::encode_with_view(&s.project, Some(&view), false);
+    // Save chat with file: the desktop app's assistant conversation goes into the project file.
+    let bytes = crate::assistant_chat::hooked(path, bytes);
     let mut backup = None;
     if adopt && s.path.as_deref() == Some(path) && s.loaded_schema < filmcraft_format::SCHEMA_VERSION {
         let b = schema_backup_path(path, s.loaded_schema);

@@ -373,6 +373,11 @@ fn app_creator(launch: Launch, graphics: graphics::GraphicsStart, created: Arc<A
         // Each file's conversation with the assistant is remembered, in the folder all the Craft
         // apps share (ArtCraft/AI).
         app.assistant.use_memory(filmcraft_ui_egui::assistant::Store::shared());
+        // Save chat with file: a project file's conversation goes into it as it is saved, and
+        // comes back when it is opened.
+        if app.assistant.memory.is_some() {
+            filmcraft_ui_egui::assistant::embed::install(&mut app.assistant);
+        }
         // Window > Claude: the pane opens a channel of its own when first asked, on a free port with
         // its token.
         app.assistant.starter = Some(Box::new(|ctx, token| control_server::start_with(0, ctx.clone(), Some(token.to_string()))));
