@@ -13,6 +13,11 @@ workspace = true
 # The synced cloud folder every Craft app shares (crates/craft-sync): iCloud Drive and the others.
 craft-sync = { path = "../craft-sync" }
 craft-ui = { workspace = true }
+craft-behavior = { workspace = true }
+craft-host = { workspace = true }
+craft-window = { workspace = true }
+craft-keymap = { workspace = true }
+craft-theme = { workspace = true }
 filmcraft-time = { workspace = true }
 filmcraft-geom = { workspace = true }
 filmcraft-color = { workspace = true }
