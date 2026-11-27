@@ -364,6 +364,7 @@
 
 # Window > Claude: the assistant pane (a product name, the same in every language).
 	Claude	Claude
+	Set Playhead	Установити курсор відтворення
 # Marker editing and shared custom colors
 	A range marker needs a positive duration	Тривалість маркера діапазону має бути додатною
 	Add Custom Color	Додати власний колір

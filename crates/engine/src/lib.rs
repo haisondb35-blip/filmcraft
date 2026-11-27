@@ -52,6 +52,7 @@ pub mod relink;
 pub mod remix;
 pub mod scene_detect;
 pub mod scopes;
+pub mod script_commands;
 pub mod sequence_extras;
 pub mod sequence_tools;
 pub mod settings;
@@ -513,6 +514,8 @@ pub enum Event {
     },
     OpenSequence(ItemId),
     OpenSource(ItemId),
+    /// Show the source monitor while retaining the panel that requested the cue.
+    CueSource(ItemId),
     /// Show this item in the Project panel (Reveal in Project).
     RevealInProject(ItemId),
 }
@@ -766,7 +769,7 @@ impl Session {
             return;
         }
         if dirty {
-            p.send_dirty(self.project.clone(), self.revision, self.path.clone());
+            p.send_dirty(self.project.clone(), self.media.clone(), self.revision, self.path.clone());
         } else {
             p.send_clean();
         }
@@ -1403,7 +1406,7 @@ pub fn media_duration(p: &Project, _pool: &MediaPool, id: ItemId) -> Option<Tick
                 id = *parent;
                 continue;
             }
-            filmcraft_project::ItemKind::AdjustmentLayer { .. } | filmcraft_project::ItemKind::Graphic { .. } => None,
+            filmcraft_project::ItemKind::AdjustmentLayer { .. } | filmcraft_project::ItemKind::Graphic { .. } | filmcraft_project::ItemKind::Script(_) => None,
         };
     }
     None
